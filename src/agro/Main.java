@@ -76,6 +76,7 @@ public class Main {
 		
 		connectionText = new JMenuItem("Connect");
 		connectionText.addActionListener(new ActionListener() {
+			// connect/disconnect
 			public void actionPerformed(ActionEvent e) {
 				if ((userDb == null) || (userDb.getConnection() == null)) {
 					ConnectForm form = new ConnectForm(_this);
@@ -96,14 +97,20 @@ public class Main {
 		loginText = new JMenuItem("Login");
 		loginText.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (isLoginned) {
-					isLoginned = false;
-					loginText.setText("Login");
-					userText.setText("User: none");
+				// check if connection is open
+				if ((userDb != null) && (userDb.getConnection() != null)) {
+					if (isLoginned) {
+						isLoginned = false;
+						loginText.setText("Login");
+						userText.setText("User: none");
+					}
+					else {
+						LoginForm frm = new LoginForm(_this);
+						frm.setVisible(true);
+					}
 				}
 				else {
-					LoginForm frm = new LoginForm(_this);
-					frm.setVisible(true);
+					// add handler for disconnected db
 				}
 			}
 		});
@@ -160,8 +167,8 @@ public class Main {
 		
 		table = new JTable();
 		tableHandler = new TableHandler(table);
-		tableHandler.addRow("2", "2");
-		tableHandler.addRow("3", "6");
+		//tableHandler.addRow("2", "2");
+		//tableHandler.addRow("3", "6");
 		frmAgroClient.getContentPane().add(table, BorderLayout.CENTER);
 	}
 	
