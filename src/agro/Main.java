@@ -22,22 +22,25 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.JTable;
 
 public class Main {
-
+	// UI components
 	private JFrame frmAgroClient;
 	private JLabel status;
-	JMenu userText;
-	JMenuItem loginText;
-	JMenuItem connectionText;
-	private Db userDb;
-	private Main _this = this;
-	private boolean isLoginned = false;
+	private JMenu userText;
+	private JMenuItem loginText;
+	private JMenuItem connectionText;
 	private JTree tree;
+	private JTable table;
+	private Db userDb;
+	// link to this
+	private Main _this = this;
+	// login flag
+	private boolean isLoginned = false;
+	// handlers
 	private TreeHandler treeHandler = null;
 	private TableHandler tableHandler = null;
-	private JTable table;
 
 	/**
-	 * Launch the application.
+	 * Application entry point
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -53,7 +56,7 @@ public class Main {
 	}
 
 	/**
-	 * Create the application.
+	 * Default constructor
 	 */
 	public Main() {
 		initialize();
@@ -76,19 +79,26 @@ public class Main {
 		
 		connectionText = new JMenuItem("Connect");
 		connectionText.addActionListener(new ActionListener() {
-			// connect/disconnect
+			/*
+			 *  connect/disconnect handler
+			 */
 			public void actionPerformed(ActionEvent e) {
+				// if disconnected
 				if ((userDb == null) || (userDb.getConnection() == null)) {
+					// open connect options form
 					ConnectForm form = new ConnectForm(_this);
 					form.setVisible(true);
 				}
+				// if connected
 				else {
+					// disconnect
 					userDb.disconnect();
 					setConnection(userDb);
 				}
 				
 			}
 		});
+		
 		mnUser.add(connectionText);
 		
 		userText = new JMenu("User: none");
@@ -96,15 +106,21 @@ public class Main {
 		
 		loginText = new JMenuItem("Login");
 		loginText.addActionListener(new ActionListener() {
+			/*
+			 * login handler
+			 */
 			public void actionPerformed(ActionEvent e) {
 				// check if connection is open
 				if ((userDb != null) && (userDb.getConnection() != null)) {
+					// if user already login
 					if (isLoginned) {
+						// exit 
 						isLoginned = false;
 						loginText.setText("Login");
 						userText.setText("User: none");
 					}
 					else {
+						// open login form
 						LoginForm frm = new LoginForm(_this);
 						frm.setVisible(true);
 					}
@@ -119,26 +135,34 @@ public class Main {
 		status = new JLabel("");
 		frmAgroClient.getContentPane().add(status, BorderLayout.SOUTH);
 		
-		// app init
+		// application initialization
 		status.setText("DISCONNECTED");
 		status.setForeground(Color.red);
 		
-		// init tree
+		// initialize tree
 		tree = new JTree();
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
+			
+			/*
+			 * tree selection handler
+			 */
 			@SuppressWarnings("null")
 			public void valueChanged(TreeSelectionEvent arg0) {
-				DefaultMutableTreeNode node = 
-						(DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+				// get selected element
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+				// if not selected, or root - exit fom function
 				if ((node != null) || ((node.isRoot()) && (node.getChildCount() == 0))) return;
-				DefaultMutableTreeNode root = 
-						(DefaultMutableTreeNode) tree.getModel().getRoot();
+				// get root element
+				DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
+				// check if this is leaf
 				if (node.isLeaf()) {
+					// get leaf.parent
 					DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
 					// check if this is a table label (each table is empty)
 					if (root.getIndex(node) != -1) {
 						//textPane.setText("Table label");
 					}
+					// this is sub-item of table
 					else {
 						int indexTableLabel = root.getIndex(parent);
 						// table "Field"
@@ -151,6 +175,7 @@ public class Main {
 						
 					}
 				}
+				// its not a leaf
 				else {
 					//int index = root.getIndex(node);
 			       // switch (index) {
@@ -162,16 +187,19 @@ public class Main {
 				}
 			}
 		});
+		// create tree handler
 		treeHandler = new TreeHandler(tree);
 		frmAgroClient.getContentPane().add(tree, BorderLayout.WEST);
 		
 		table = new JTable();
+		// create table handler
 		tableHandler = new TableHandler(table);
-		//tableHandler.addRow("2", "2");
-		//tableHandler.addRow("3", "6");
 		frmAgroClient.getContentPane().add(table, BorderLayout.CENTER);
 	}
 	
+	/*
+	 *  set Connection
+	 */
 	public void setConnection(Db d) {
 		this.userDb  = d;
 		if (userDb.getConnection() != null) {
@@ -188,6 +216,9 @@ public class Main {
 		}
 	}
 	
+	/*
+	 *  try to login user
+	 */
 	public void setUser(String login, String pass) {
 		if (userDb.getConnection() != null) {
 			isLoginned = userDb.authorization(login, pass);

@@ -8,11 +8,14 @@ import java.sql.Statement;
 
 public class Db {
 	
+	// connection link
 	private Connection con = null;
+	// defaults
 	public static String DEFAULT_URL = "192.168.101.250";
 	public static String DEFAULT_USER = "postgres";
 	public static String DEFAULT_PASS = "1";
 	public static String DEFAULT_DB = "qwer";
+	
 	public Db() {
 		
 	}
@@ -24,6 +27,9 @@ public class Db {
 		this(DEFAULT_USER, DEFAULT_PASS, db, DEFAULT_URL);
 	}
 	
+	/*
+	 * Constructor for any params
+	 */
 	public Db(String login, String pass, String db, String url) {
 		try {
 			Class.forName("org.postgresql.Driver");

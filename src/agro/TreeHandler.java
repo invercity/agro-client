@@ -16,7 +16,9 @@ public class TreeHandler {
 	ResultSet res = null;
 	DefaultMutableTreeNode root = null;
 	DefaultTreeModel model = null;
+	// debug constant
 	private static String my = "TreeHandler: ";
+	// defaults
 	private static String QUERY_GET_FIELDS = "select * from field_newww";
 	private static String QUERY_GET_SEASON = "select * from rasteniya_db.sezon";
 	private static String QUERY_GET_CULTIVATION = "select * from plan_db.cultivation_technology";
@@ -33,6 +35,9 @@ public class TreeHandler {
 		model = new DefaultTreeModel(root);
 	}
 	
+	/*
+	 * Update tree items
+	 */
 	public void update() {
 		if ((dataDb == null) || (dataDb.getConnection() == null)) {
 			// if not connected
@@ -56,6 +61,9 @@ public class TreeHandler {
 		model.reload();
 	}
 	
+	/*
+	 * Add table to tree root
+	 */
 	private void addTable(String name, String sql) {
 		DefaultMutableTreeNode node = new DefaultMutableTreeNode(name);
 		root.add(node);
@@ -69,11 +77,17 @@ public class TreeHandler {
 		}
 	}
 	
+	/*
+	 * set tree connection
+	 */
 	public void connect(Db database) {
 		this.dataDb = database;
 		update();
 	}
 	
+	/*
+	 * get data of each row
+	 */
 	public String[] getData(int row) {
 		int i = 0;
 		try {

@@ -11,7 +11,9 @@ import javax.swing.table.JTableHeader;
 
 public class TableHandler {
 	
+	// link to table
 	private JTable tbl;
+	// table model
 	private DefaultTableModel model;
 	
 	public TableHandler() {
@@ -29,11 +31,15 @@ public class TableHandler {
 		
 	}
 	
+	/*
+	 *  add row to table
+	 */
 	public void addRow(String head, String data) {
 		String[] d = {head, data};
 		model.addRow(d);
 	}
 	
+	// additional class for Row Header Decorating
 	static class RowHeaderRenderer extends DefaultTableCellRenderer {
 	    /**
 		 * 
