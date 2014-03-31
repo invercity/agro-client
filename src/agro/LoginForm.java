@@ -25,6 +25,8 @@ public class LoginForm extends JDialog {
 	private JTextField login;
 	private JTextField password;
 	private Main parent;
+	private static String DEFAULT_LOGIN = "1";
+	private static String DEFAULT_PASS = "1";
 
 	/**
 	 * Launch the application.
@@ -72,7 +74,7 @@ public class LoginForm extends JDialog {
 			gbc_login.gridy = 0;
 			contentPanel.add(login, gbc_login);
 			login.setColumns(10);
-			login.setText("test");
+			login.setText(DEFAULT_LOGIN);
 		}
 		{
 			JLabel lblPassword = new JLabel("Password");
@@ -91,7 +93,7 @@ public class LoginForm extends JDialog {
 			gbc_password.gridy = 1;
 			contentPanel.add(password, gbc_password);
 			password.setColumns(10);
-			password.setText("test");
+			password.setText(DEFAULT_PASS);
 		}
 		{
 			JPanel buttonPane = new JPanel();

@@ -20,6 +20,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.JTable;
+import javax.swing.JScrollPane;
 
 public class Main {
 	// UI components
@@ -28,16 +29,19 @@ public class Main {
 	private JMenu userText;
 	private JMenuItem loginText;
 	private JMenuItem connectionText;
-	private JTree tree;
 	private JTable table;
 	private Db userDb;
 	// link to this
 	private Main _this = this;
 	// login flag
-	private boolean isLoginned = false;
+	//private boolean isLoginned = false;
 	// handlers
 	private TreeHandler treeHandler = null;
 	private TableHandler tableHandler = null;
+	private JScrollPane scrollPane;
+	private JTree tree;
+	private JMenu textEvent;
+	private JMenuItem eventCreate;
 
 	/**
 	 * Application entry point
@@ -68,7 +72,7 @@ public class Main {
 	private void initialize() {
 		frmAgroClient = new JFrame();
 		frmAgroClient.setTitle("Agro client");
-		frmAgroClient.setBounds(100, 100, 450, 300);
+		frmAgroClient.setBounds(100, 100, 670, 444);
 		frmAgroClient.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -94,6 +98,9 @@ public class Main {
 					// disconnect
 					userDb.disconnect();
 					setConnection(userDb);
+					loginText.setText("Login");
+					userText.setText("User: none");
+					treeHandler.update();
 				}
 				
 			}
@@ -113,11 +120,12 @@ public class Main {
 				// check if connection is open
 				if ((userDb != null) && (userDb.getConnection() != null)) {
 					// if user already login
-					if (isLoginned) {
+					if (userDb.loginned()) {
 						// exit 
-						isLoginned = false;
+						userDb.authorization();
 						loginText.setText("Login");
 						userText.setText("User: none");
+						treeHandler.update();
 					}
 					else {
 						// open login form
@@ -132,6 +140,20 @@ public class Main {
 		});
 		userText.add(loginText);
 		
+		textEvent = new JMenu("Event");
+		menuBar.add(textEvent);
+		
+		eventCreate = new JMenuItem("Create");
+		eventCreate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if ((userDb != null) && (userDb.getConnection() != null) && (userDb.loginned())) {
+					EventForm form = new EventForm(userDb);
+					form.setVisible(true);
+				}
+			}
+		});
+		textEvent.add(eventCreate);
+		
 		status = new JLabel("");
 		frmAgroClient.getContentPane().add(status, BorderLayout.SOUTH);
 		
@@ -139,19 +161,28 @@ public class Main {
 		status.setText("DISCONNECTED");
 		status.setForeground(Color.red);
 		
-		// initialize tree
+		table = new JTable();
+		// create table handler
+		tableHandler = new TableHandler(table);
+		frmAgroClient.getContentPane().add(table, BorderLayout.CENTER);
+		
+		scrollPane = new JScrollPane();
+		frmAgroClient.getContentPane().add(scrollPane, BorderLayout.WEST);
+		
 		tree = new JTree();
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
 			
 			/*
 			 * tree selection handler
 			 */
-			@SuppressWarnings("null")
+			//@SuppressWarnings("null")
 			public void valueChanged(TreeSelectionEvent arg0) {
+				// clear table
+				tableHandler.clear();
 				// get selected element
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 				// if not selected, or root - exit fom function
-				if ((node != null) || ((node.isRoot()) && (node.getChildCount() == 0))) return;
+				if ((node == null) || ((node.isRoot()) && (node.getChildCount() == 0))) return;
 				// get root element
 				DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
 				// check if this is leaf
@@ -167,34 +198,46 @@ public class Main {
 						int indexTableLabel = root.getIndex(parent);
 						// table "Field"
 						if (indexTableLabel == 0) {
-							//int indexItem = parent.getIndex(node);
-							//String[] res = treeHandler.getData(indexItem);
-							//String text = "shape leng: " + res[1] + ", shape area: " + res[2] + ".";
-							//textPane.setText(text);
+							int indexItem = parent.getIndex(node);
+							String[] res = treeHandler.getData(indexTableLabel, indexItem);
+							tableHandler.addRow(TreeHandler.ID, res[0]);
+							tableHandler.addRow(TreeHandler.FIELDS_PROPERTY[0], res[1]);
+							tableHandler.addRow(TreeHandler.FIELDS_PROPERTY[1], res[2]);
+							tableHandler.addRow(TreeHandler.FIELDS_PROPERTY[2], res[3]);
 						}
-						
+						// table "Season
+						if (indexTableLabel == 1) {
+							int indexItem = parent.getIndex(node);
+							String[] res = treeHandler.getData(indexTableLabel, indexItem);
+							tableHandler.addRow(TreeHandler.ID, res[0]);
+							tableHandler.addRow(TreeHandler.SEASON_PROPERTY[0], res[1]);
+							tableHandler.addRow(TreeHandler.SEASON_PROPERTY[1], res[2]);
+							tableHandler.addRow(TreeHandler.SEASON_PROPERTY[2], res[3]);
+						}
+						// table "Cultivation"
+						if (indexTableLabel == 2) {
+							int indexItem = parent.getIndex(node);
+							String[] res = treeHandler.getData(indexTableLabel, indexItem);
+							tableHandler.addRow(TreeHandler.ID, res[0]);
+							tableHandler.addRow(TreeHandler.CULTIVATION_PROPERTY[0], res[1]);
+							tableHandler.addRow(TreeHandler.CULTIVATION_PROPERTY[1], res[2]);
+							tableHandler.addRow(TreeHandler.CULTIVATION_PROPERTY[2], res[3]);
+						}
+						// table "Executive plan"
+						if (indexTableLabel == 3) {
+							int indexItem = parent.getIndex(node);
+							String[] res = treeHandler.getData(indexTableLabel, indexItem);
+							tableHandler.addRow(TreeHandler.ID, res[0]);
+							tableHandler.addRow(TreeHandler.EXECUTIVE_PROPERTY[0], res[1]);
+							tableHandler.addRow(TreeHandler.EXECUTIVE_PROPERTY[1], res[2]);
+							tableHandler.addRow(TreeHandler.EXECUTIVE_PROPERTY[2], res[3]);
+						}
 					}
-				}
-				// its not a leaf
-				else {
-					//int index = root.getIndex(node);
-			       // switch (index) {
-					//case -1: textPane.setText("Root item");
-				//	break;
-					//case 0: textPane.setText("Table Field");
-				//	break;
-				//	}
 				}
 			}
 		});
-		// create tree handler
 		treeHandler = new TreeHandler(tree);
-		frmAgroClient.getContentPane().add(tree, BorderLayout.WEST);
-		
-		table = new JTable();
-		// create table handler
-		tableHandler = new TableHandler(table);
-		frmAgroClient.getContentPane().add(table, BorderLayout.CENTER);
+		scrollPane.setViewportView(tree);
 	}
 	
 	/*
@@ -221,11 +264,12 @@ public class Main {
 	 */
 	public void setUser(String login, String pass) {
 		if (userDb.getConnection() != null) {
-			isLoginned = userDb.authorization(login, pass);
-			if (isLoginned) {
+			userDb.authorization(login, pass);
+			if (userDb.loginned()) {
 				loginText.setText("Logout");
-				userText.setText("User: " + login);
+				userText.setText("User: " + userDb.getUser());
 			}
 		}
+		treeHandler.update();
 	}
 }

@@ -15,6 +15,11 @@ public class Db {
 	public static String DEFAULT_USER = "postgres";
 	public static String DEFAULT_PASS = "1";
 	public static String DEFAULT_DB = "qwer";
+	// user data
+	private String login = "";
+	private String pass = "";
+	private String user = "";
+	private boolean isLoginned = false;
 	
 	public Db() {
 		
@@ -57,12 +62,19 @@ public class Db {
 		Statement st = null;
 		try {
 			st = con.createStatement();
-			String query = "SELECT * FROM employee where login='" + login + "' and password='" + 
-			pass + "';";
+			String query = "SELECT * FROM personnel_db.staff where id='" + Integer.valueOf(login) + "' and num='" + 
+			Integer.valueOf(pass)+ "';";
 			ResultSet res = st.executeQuery(query);
 			int cnt = 0;
-			while(res.next()) cnt++;
+			while(res.next()) {
+				this.user = res.getString(3);
+				isLoginned = true;
+				this.login = login;
+				this.pass = pass;
+				cnt++;
+			}
 			if (cnt > 0) return true;
+			//else 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -70,8 +82,25 @@ public class Db {
 		return false;
 	}
 	
+	public boolean authorization() {
+		login = "";
+		pass = "";
+		user = "";
+		isLoginned = false;
+		return true;
+	}
+	
+	public boolean loginned() {
+		return isLoginned;
+	}
+	
 	public void disconnect() {
 		con = null;
+		authorization();
+	}
+	
+	public String getUser() {
+		return user;
 	}
 
 }

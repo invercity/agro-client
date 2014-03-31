@@ -39,6 +39,10 @@ public class TableHandler {
 		model.addRow(d);
 	}
 	
+	public void clear() {
+		model.setRowCount(0);
+	}
+	
 	// additional class for Row Header Decorating
 	static class RowHeaderRenderer extends DefaultTableCellRenderer {
 	    /**

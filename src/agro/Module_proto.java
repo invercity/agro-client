@@ -11,8 +11,8 @@ public class Module_proto {
 
 @SuppressWarnings({ "resource", "unchecked" })
 public static void main(String[] args) throws IOException {
-InetAddress addr = InetAddress.getByName("192.34.12.12");
-//подключаемся на 8181 порт
+InetAddress addr = InetAddress.getByName("192.168.101.50");
+
 Socket socket = new Socket(addr, 8181);
    try {
 
@@ -31,27 +31,24 @@ Socket socket = new Socket(addr, 8181);
    String line = null;
    JSONObject resultJson = new JSONObject();
    JSONParser parser = new JSONParser();
-   //отсылаем сообщение с попыткой авторизоватся
-   //формируем обьект JSON
-   resultJson.put("mess_type","MS_AUTH"); 
-   resultJson.put("name","test");
-   resultJson.put("password","test");
 
-   //приводим к строке. Именно в виде строки даные передуются по сокетам
+   resultJson.put("mess_type","MS_AUTH"); 
+   resultJson.put("name","disp.agro");
+   resultJson.put("password","disp.agro");
+
+
    String json_str =  resultJson.toJSONString();  
-   out.println(json_str); //пишем в буффер
+   out.println(json_str); 
    out.flush();
 
-   //теперь попытаемся получить ответ от сервера
-   //например данные о попытке авторизоватся 
-   line = in.readLine();  //читаем строку с буффера
+   line = in.readLine();  
   try {
-    Object obj = parser.parse(line);  //парсим строку в объект ДжСОН
+    Object obj = parser.parse(line);  //РїР°СЂСЃРёРј СЃС‚СЂРѕРєСѓ РІ РѕР±СЉРµРєС‚ Р”Р¶РЎРћРќ
     resultJson = (JSONObject) obj;   //
 
-    String mess_type = (String) resultJson.get("mess_type"); //получем тип сообщения
+    String mess_type = (String) resultJson.get("mess_type"); //РїРѕР»СѓС‡РµРј С‚РёРї СЃРѕРѕР±С‰РµРЅРёСЏ
     if (mess_type.equals("MS_AUTH")){
-        String message = (String) resultJson.get("message"); //получаем поля
+        String message = (String) resultJson.get("message"); //РїРѕР»СѓС‡Р°РµРј РїРѕР»СЏ
         String status = (String) resultJson.get("status");
         System.out.println("Request status "+status+". Message "+message);
 
@@ -61,8 +58,8 @@ Socket socket = new Socket(addr, 8181);
     System.out.println("Cant parse json string");
 }
 
-  //получить информацию о модуле (ip adress)
-  //тут все аналогично, только тип сообщения MS_INFO
+  //РїРѕР»СѓС‡РёС‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РјРѕРґСѓР»Рµ (ip adress)
+  //С‚СѓС‚ РІСЃРµ Р°РЅР°Р»РѕРіРёС‡РЅРѕ, С‚РѕР»СЊРєРѕ С‚РёРї СЃРѕРѕР±С‰РµРЅРёСЏ MS_INFO
   resultJson.put("mess_type","MS_INFO"); 
   resultJson.put("name","test");
 
